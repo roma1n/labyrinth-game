@@ -29,55 +29,66 @@ class LabyrinthGenerator:
         processed = [[False for j in range(self.height)] for i in range(self.length)]
         stack = []
 
-        def go_to(x, y):
-            nonlocal processed
-            nonlocal stack
-            nonlocal a
+        def is_available(x, y):
             is_space = labyrinth_controller.is_space
             if not is_space(a, (2 * x + 1, 2 * y + 1)) or processed[x][y]:
                 return False
+            else:
+                return True
+
+        def get_available_directions(x, y):
+            dirs = {
+                (x - 1, y): 'left',
+                (x, y - 1): 'up',
+                (x + 1, y): 'right',
+                (x, y + 1): 'down'
+            }
+            res = []
+            for direction in dirs:
+                if is_available(direction[0], direction[1]):
+                    res.append(dirs[direction])
+            return res
+
+        def go_to(x, y):
             stack.append((x, y))
             processed[x][y] = True
-            return True
 
         def go_up(x, y):
-            nonlocal a
-            if not go_to(x, y - 1):
-                return False
+            go_to(x, y - 1)
             a[2 * x + 1][2 * y] = 0
-            return True
 
         def go_down(x, y):
-            nonlocal a
-            if not go_to(x, y + 1):
-                return False
+            go_to(x, y + 1)
             a[2 * x + 1][2 * y + 2] = 0
-            return True
 
         def go_left(x, y):
-            nonlocal a
-            if not go_to(x - 1, y):
-                return False
+            go_to(x - 1, y)
             a[2 * x][2 * y + 1] = 0
-            return True
 
         def go_right(x, y):
-            nonlocal a
-            if not go_to(x + 1, y):
-                return False
+            go_to(x + 1, y)
             a[2 * x + 2][2 * y + 1] = 0
-            return True
 
         stack.append((0, 0))
         processed[0][0] = True
+        dirs_str_to_funcs = {
+            'left': go_left,
+            'right': go_right,
+            'up': go_up,
+            'down': go_down
+        }
         while len(stack) > 0:
-            d = [go_up, go_down, go_left, go_right]
-            random.shuffle(d)
             pos_x = stack[-1][0]
             pos_y = stack[-1][1]
-            if d[0](pos_x, pos_y) or d[1](pos_x, pos_y) or d[2](pos_x, pos_y) or d[3](pos_x, pos_y):
-                continue
-            stack.pop()
+            avail_dirs_str = get_available_directions(pos_x, pos_y)
+            if len(avail_dirs_str) > 0:
+                dir_funcs = []
+                for dir_str in avail_dirs_str:
+                    dir_funcs.append(dirs_str_to_funcs[dir_str])
+                random.shuffle(dir_funcs)
+                dir_funcs[0](pos_x, pos_y)
+            else:
+                stack.pop()
         return a
 
     def get_random_point(self):
