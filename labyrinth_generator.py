@@ -1,5 +1,6 @@
 import random
 import labyrinth_controller
+import game
 
 
 class LabyrinthGenerator:
@@ -11,98 +12,62 @@ class LabyrinthGenerator:
     next point among vertices that are next to current
     Result: tree
     """
-    height = int()
-    length = int()
 
-    def __init__(self, _l, _h):
-        self.height = _h
-        self.length = _l
+    def __init__(self, length, height):
+        self.height = height
+        self.length = length
 
     def generate_clear_field(self):
-        a = [[1] * (2 * self.length + 1) for i in range(2 * self.length + 1)]
-        for i in range(self.length):
-            for j in range(self.height):
-                a[2 * i + 1][2 * j + 1] = 0
-        return a
+        return [[1 - (i % 2) * (j % 2) for j in range(2 * self.height + 1)] for i in range(2 * self.length + 1)]
 
-    def make_ways(self, a):
+    def make_ways(self, labyrinth):
         processed = [[False for j in range(self.height)] for i in range(self.length)]
         stack = []
 
-        def is_available(x, y):
-            is_space = labyrinth_controller.is_space
-            if not is_space(a, (2 * x + 1, 2 * y + 1)) or processed[x][y]:
-                return False
-            else:
-                return True
+        def is_available(pos):
+            return game.lab_solver.is_space(labyrinth, pos) and not processed[pos.x // 2][pos.y // 2]
 
-        def get_available_directions(x, y):
+        def get_available_directions(pos):
             dirs = {
-                (x - 1, y): 'left',
-                (x, y - 1): 'up',
-                (x + 1, y): 'right',
-                (x, y + 1): 'down'
+                pos.left().left(): 'left',
+                pos.up().up(): 'up',
+                pos.right().right(): 'right',
+                pos.down().down(): 'down'
             }
             res = []
             for direction in dirs:
-                if is_available(direction[0], direction[1]):
+                if is_available(direction):
                     res.append(dirs[direction])
             return res
 
-        def go_to(x, y):
-            stack.append((x, y))
-            processed[x][y] = True
-
-        def go_up(x, y):
-            go_to(x, y - 1)
-            a[2 * x + 1][2 * y] = 0
-
-        def go_down(x, y):
-            go_to(x, y + 1)
-            a[2 * x + 1][2 * y + 2] = 0
-
-        def go_left(x, y):
-            go_to(x - 1, y)
-            a[2 * x][2 * y + 1] = 0
-
-        def go_right(x, y):
-            go_to(x + 1, y)
-            a[2 * x + 2][2 * y + 1] = 0
-
-        stack.append((0, 0))
+        stack.append(labyrinth_controller.Position(1, 1))
         processed[0][0] = True
-        dirs_str_to_funcs = {
-            'left': go_left,
-            'right': go_right,
-            'up': go_up,
-            'down': go_down
-        }
         while len(stack) > 0:
-            pos_x = stack[-1][0]
-            pos_y = stack[-1][1]
-            avail_dirs_str = get_available_directions(pos_x, pos_y)
+            cur_pos = stack[-1]
+            avail_dirs_str = get_available_directions(cur_pos)
             if len(avail_dirs_str) > 0:
-                dir_funcs = []
-                for dir_str in avail_dirs_str:
-                    dir_funcs.append(dirs_str_to_funcs[dir_str])
-                random.shuffle(dir_funcs)
-                dir_funcs[0](pos_x, pos_y)
+                random.shuffle(avail_dirs_str)
+                wall_to_destroy = cur_pos.next_by_str(avail_dirs_str[0])()
+                labyrinth[wall_to_destroy.x][wall_to_destroy.y] = 0
+                new_pos = wall_to_destroy.next_by_str(avail_dirs_str[0])()
+                stack.append(new_pos)
+                processed[new_pos.x // 2][new_pos.y // 2] = True
             else:
                 stack.pop()
-        return a
+        return labyrinth
 
     def get_random_point(self):
         x = random.choice(range(self.length))
         y = random.choice(range(self.height))
-        return 2 * x + 1, 2 * y + 1
+        return labyrinth_controller.Position(2 * x + 1, 2 * y + 1)
 
     def set_way(self, labyrinth):
         start = self.get_random_point()
         finish = self.get_random_point()
         while finish == start:
             finish = self.get_random_point()
-        labyrinth[start[0]][start[1]] = 's'
-        labyrinth[finish[0]][finish[1]] = 'f'
+        labyrinth[start.x][start.y] = 's'
+        labyrinth[finish.x][finish.y] = 'f'
         return start, finish
 
     def generate(self):

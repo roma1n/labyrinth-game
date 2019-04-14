@@ -3,26 +3,21 @@ import pygame
 from player_controller import key_escape, key_start_play
 
 
-pygame.init()
-pygame.font.init()
-
-
 class menu():
-    # define colors:
-    cl_back_ground = (200, 200, 80)
-    cl_text = (70, 0, 0)
-    # window settings
-    window = pygame.Surface((0, 0))
-    window_size = (840, 600)
-    window_caption = 'Labyrinth'
-    # texts settings:
-    text1_midtop = (420, 250)
-    text2_midtop = (420, 350)
-    text1_string = 'Press SPACE to start'
-    text2_string = 'Press ESC to exit'
-    font = pygame.font.Font('fonts/purisa.ttf', 40)
-
     def __init__(self):
+        # define colors:
+        self.cl_back_ground = (200, 200, 80)
+        self.cl_text = (70, 0, 0)
+        # window settings
+        self.window = pygame.Surface((0, 0))
+        self.window_size = (840, 600)
+        self.window_caption = 'Labyrinth'
+        # texts settings:
+        self.text1_midtop = (420, 250)
+        self.text2_midtop = (420, 350)
+        self.text1_string = 'Press SPACE to start'
+        self.text2_string = 'Press ESC to exit'
+        self.font = pygame.font.Font('fonts/purisa.ttf', 40)
         pygame.display.set_caption(self.window_caption)
 
     def run(self):
@@ -51,6 +46,8 @@ class menu():
         pygame.quit()
 
 
-m = menu()
-m.__init__()
-m.run()
+if __name__ == '__main__':
+    pygame.init()
+    pygame.font.init()
+    m = menu()
+    m.run()
