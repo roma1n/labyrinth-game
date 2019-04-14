@@ -1,25 +1,25 @@
 import pygame
-import game
+import labyrinth_controller
 
 
 def move_possible(pos, labyrinth, direction):
-    dirs = {'left': pos.left,
-            'right': pos.right,
-            'up': pos.up,
-            'down': pos.down}
-    return game.lab_solver.is_space(labyrinth, dirs[direction]())
+    dirs = {'left': (pos[0] - 1, pos[1]),
+            'right': (pos[0] + 1, pos[1]),
+            'up': (pos[0], pos[1] - 1),
+            'down': (pos[0], pos[1] + 1)}
+    return labyrinth_controller.is_space(labyrinth, dirs[direction])
 
 
 def move(pos, labyrinth, direction):
     if move_possible(pos, labyrinth, direction):
         if direction == 'left':
-            pos = pos.left()
+            pos = (pos[0] - 1, pos[1])
         elif direction == 'right':
-            pos = pos.right()
+            pos = (pos[0] + 1, pos[1])
         elif direction == 'up':
-            pos = pos.up()
+            pos = (pos[0], pos[1] - 1)
         elif direction == 'down':
-            pos = pos.down()
+            pos = (pos[0], pos[1] + 1)
     return pos
 
 
