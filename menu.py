@@ -35,7 +35,7 @@ class Menu:
                     run = False
                 elif event.type == pygame.KEYDOWN:
                     if event.key == key_start_play:
-                        game = Game()
+                        game = Game(10, 7)
                         run = not game.play(window)
                     elif event.key == key_escape:
                         run = False

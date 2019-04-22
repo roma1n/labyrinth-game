@@ -69,9 +69,9 @@ class Level:
 
 
 class Game:
-    def __init__(self):
-        self.lab_generator = labyrinth_generator.LabyrinthGenerator(10, 7)
-        self.lab_solver = labyrinth_controller.LabyrinthSolver(10, 7)
+    def __init__(self, length, height):
+        self.lab_generator = labyrinth_generator.LabyrinthGenerator(length, height)
+        self.lab_solver = labyrinth_controller.LabyrinthSolver(length, height)
         self.level = Level(self.lab_generator)
 
     def complete_level(self):
