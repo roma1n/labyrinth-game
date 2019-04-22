@@ -17,7 +17,7 @@ class LabyrinthGenerator:
         self.length = length
 
     def in_field(self, position):
-        return 0 < position.x < 2 * self.length + 1 and 0 < position.y < 2 * self.height + 1
+        return 0 <= position.x < 2 * self.length + 1 and 0 <= position.y < 2 * self.height + 1
 
     def generate_clear_field(self):
         return [[1 - (i % 2) * (j % 2) for j in range(2 * self.height + 1)] for i in range(2 * self.length + 1)]
