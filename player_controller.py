@@ -1,17 +1,16 @@
 import pygame
-import game
 
 
-def move_possible(pos, labyrinth, direction):
+def move_possible(pos, labyrinth, direction, lab_solver):
     dirs = {'left': pos.left,
             'right': pos.right,
             'up': pos.up,
             'down': pos.down}
-    return game.lab_solver.is_space(labyrinth, dirs[direction]())
+    return lab_solver.is_space(labyrinth, dirs[direction]())
 
 
-def move(pos, labyrinth, direction):
-    if move_possible(pos, labyrinth, direction):
+def move(pos, labyrinth, direction, lab_solver):
+    if move_possible(pos, labyrinth, direction, lab_solver):
         if direction == 'left':
             pos = pos.left()
         elif direction == 'right':
@@ -23,15 +22,15 @@ def move(pos, labyrinth, direction):
     return pos
 
 
-def action(pos, labyrinth, key):
+def action(pos, labyrinth, key, lab_solver):
     if key == key_up:
-        pos = move(pos, labyrinth, 'up')
+        pos = move(pos, labyrinth, 'up', lab_solver)
     elif key == key_down:
-        pos = move(pos, labyrinth, 'down')
+        pos = move(pos, labyrinth, 'down', lab_solver)
     elif key == key_left:
-        pos = move(pos, labyrinth, 'left')
+        pos = move(pos, labyrinth, 'left', lab_solver)
     elif key == key_right:
-        pos = move(pos, labyrinth, 'right')
+        pos = move(pos, labyrinth, 'right', lab_solver)
     return pos
 
 

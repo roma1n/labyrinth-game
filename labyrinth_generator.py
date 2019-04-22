@@ -1,6 +1,5 @@
 import random
 import labyrinth_controller
-import game
 
 
 class LabyrinthGenerator:
@@ -17,6 +16,9 @@ class LabyrinthGenerator:
         self.height = height
         self.length = length
 
+    def in_field(self, position):
+        return 0 < position.x < 2 * self.length + 1 and 0 < position.y < 2 * self.height + 1
+
     def generate_clear_field(self):
         return [[1 - (i % 2) * (j % 2) for j in range(2 * self.height + 1)] for i in range(2 * self.length + 1)]
 
@@ -25,7 +27,7 @@ class LabyrinthGenerator:
         stack = []
 
         def is_available(pos):
-            return game.lab_solver.is_space(labyrinth, pos) and not processed[pos.x // 2][pos.y // 2]
+            return self.in_field(pos) and not processed[pos.x // 2][pos.y // 2]
 
         def get_available_directions(pos):
             dirs = {

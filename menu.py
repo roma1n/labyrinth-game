@@ -3,7 +3,7 @@ import pygame
 from player_controller import key_escape, key_start_play
 
 
-class menu():
+class Menu:
     def __init__(self):
         # define colors:
         self.cl_back_ground = (200, 200, 80)
@@ -49,5 +49,5 @@ class menu():
 if __name__ == '__main__':
     pygame.init()
     pygame.font.init()
-    m = menu()
+    m = Menu()
     m.run()

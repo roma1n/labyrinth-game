@@ -27,7 +27,9 @@ def draw_frame(window, labyrinth, player):
     def draw_block(x, y, block_type):
         nonlocal block_size
         nonlocal color
-        pygame.draw.rect(window, color[block_type], (x * block_size, y * block_size, block_size, block_size))
+        pygame.draw.rect(window,
+                         color[block_type],
+                         (x * block_size, y * block_size, block_size, block_size))
 
     for col in range(len(labyrinth)):
         for row in range(len(labyrinth[0])):
@@ -36,12 +38,8 @@ def draw_frame(window, labyrinth, player):
     return window
 
 
-lab_generator = labyrinth_generator.LabyrinthGenerator(10, 7)
-lab_solver = labyrinth_controller.LabyrinthSolver(10, 7)
-
-
 class Level:
-    def __init__(self):
+    def __init__(self, lab_generator):
         self.labyrinth, self.start, self.finish = lab_generator.generate()
         self.player = self.start
         self.complete = False
@@ -59,10 +57,11 @@ class Level:
     def time_taken(self):
         return round(self.time_finish - self.time_start, 3)
 
-    def finish_log(self):
+    def finish_log(self, lab_solver):
         self.time_finish = time.clock()
-        labyrinth_solver = labyrinth_controller.LabyrinthSolver(10, 7)
-        w = labyrinth_solver.optimal_way_length(self.labyrinth, self.start, self.finish)
+        w = lab_solver.optimal_way_length(self.labyrinth,
+                                          self.start,
+                                          self.finish)
         score = round(100 * w / self.step_counter, 1)
         print("You've done in {} steps".format(self.step_counter))
         print("Your way was optimal for {}%".format(score))
@@ -71,13 +70,15 @@ class Level:
 
 class Game:
     def __init__(self):
-        self.level = Level()
+        self.lab_generator = labyrinth_generator.LabyrinthGenerator(10, 7)
+        self.lab_solver = labyrinth_controller.LabyrinthSolver(10, 7)
+        self.level = Level(self.lab_generator)
 
     def complete_level(self):
-        self.level.finish_log()
+        self.level.finish_log(self.lab_solver)
 
     def start_level(self):
-        self.level = Level()
+        self.level = Level(self.lab_generator)
 
     def update(self, window):
         for event in pygame.event.get():
@@ -87,7 +88,10 @@ class Game:
                 if event.key == key_escape:
                     return False
                 previous_pos = self.level.player
-                self.level.player = player_controller.action(self.level.player, self.level.labyrinth, event.key)
+                self.level.player = player_controller.action(self.level.player,
+                                                             self.level.labyrinth,
+                                                             event.key,
+                                                             self.lab_solver)
                 if previous_pos != self.level.player:
                     self.level.visit_pos(self.level.player)
         draw_frame(window, self.level.labyrinth, self.level.player)
