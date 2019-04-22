@@ -23,14 +23,13 @@ def move(pos, labyrinth, direction, lab_solver):
 
 
 def action(pos, labyrinth, key, lab_solver):
-    if key == key_up:
-        pos = move(pos, labyrinth, 'up', lab_solver)
-    elif key == key_down:
-        pos = move(pos, labyrinth, 'down', lab_solver)
-    elif key == key_left:
-        pos = move(pos, labyrinth, 'left', lab_solver)
-    elif key == key_right:
-        pos = move(pos, labyrinth, 'right', lab_solver)
+    button_to_dir = {
+        key_up: 'up',
+        key_down: 'down',
+        key_left: 'left',
+        key_right: 'right'
+    }
+    pos = move(pos, labyrinth, button_to_dir[key], lab_solver)
     return pos
 
 
